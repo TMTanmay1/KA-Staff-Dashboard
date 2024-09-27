@@ -41,6 +41,8 @@ const Home = () => {
 
 
   useEffect(() => {
+    console.log(id);
+    
     // Fetch batches from the API
     const fetchTask = async () => {
       try {
@@ -49,6 +51,7 @@ const Home = () => {
             Authorization: `Token ${Token}`,
           },
         });
+
         setSampleData(response.data.table_data);
       } catch (error) {
         console.error('Error fetching batches:', error);
@@ -57,21 +60,22 @@ const Home = () => {
 
     fetchTask();
 
-    const fetchDashboardData = async () => {
-      try {
-        const response = await axios.get(`https://crpch.in/api/ka/student/details/total/?student_id=${id}`, {
-          headers: {
-            Authorization: `Token ${Token}`,
-          },
-        });
-        setDashboardData(response.data);
-      } catch (error) {
-        console.error('Error fetching dashboard data:', error);
-      }
-    };
+    // const fetchDashboardData = async () => {
+    //   try {
+    //     const response = await axios.get(`https://crpch.in/api/ka/student/details/total/?student_id=${id}`, {
+    //       headers: {
+    //         Authorization: `Token ${Token}`,
+    //       },
+    //     });
+    //     setDashboardData(response.data);
+    //   } catch (error) {
+    //     console.error('Error fetching dashboard data:', error);
+    //   }
+    // };
 
-    fetchDashboardData();
+    // fetchDashboardData();
   }, []);
+
 
 
   // Filter data based on search term

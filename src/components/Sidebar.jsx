@@ -139,7 +139,7 @@ const Sidebar = () => {
             <ListItemIcon>
               <HowToRegIcon />
             </ListItemIcon>
-            {open && <ListItemText primary="Attendance" />}
+            {open && <ListItemText primary="Student Attendance" />}
           </ListItem>
 
           
