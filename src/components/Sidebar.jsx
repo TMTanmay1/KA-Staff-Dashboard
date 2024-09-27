@@ -21,6 +21,18 @@ const Sidebar = () => {
     setOpen(!open);
   };
 
+  const handleBatchManagementClick = () => {
+    setBatchManagementOpen(!batchManagementOpen);
+  };
+
+  const handleStudentManagementClick = () => {
+    setStudentManagementOpen(!studentManagementOpen);
+  };
+
+  const handleCourseModuleClick = () => {
+    setCourseModuleOpen(!courseModuleOpen);
+  };
+
   const handleStudyMaterialClick = () => {
     setStudyMaterialOpen(!studyMaterialOpen);
   };
@@ -121,6 +133,222 @@ const Sidebar = () => {
             </ListItemIcon>
             {open && <ListItemText primary="Home" />}
           </ListItem>
+          
+          <ListItem
+            button
+            onClick={handleBatchManagementClick}
+            sx={{
+              my: 1.5,
+              borderRadius: '8px',
+              '&:hover': {
+                backgroundColor: 'rgba(255, 255, 255, 0.6)',
+                backdropFilter: 'blur(10px)',
+                boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
+              },
+            }}
+          >
+            <ListItemIcon>
+              <School />
+            </ListItemIcon>
+            {open && <ListItemText primary="Batch Management" />}
+            {open && (batchManagementOpen ? <ExpandLess /> : <ExpandMore />)}
+          </ListItem>
+          <Collapse in={batchManagementOpen} timeout="auto" unmountOnExit>
+            <List component="div" disablePadding>
+              <ListItem
+                button
+                component={Link}
+                to="/dashboard/batch-registration"
+                sx={{
+                  pl: 4,
+                  backgroundColor: 'white',
+                  borderRadius: '8px',
+                  boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
+                  my: 0.5,
+                  '&:hover': {
+                    backgroundColor: '#f5f5f5',
+                  },
+                }}
+              >
+                <ListItemIcon>
+                  <Add />
+                </ListItemIcon>
+                <ListItemText primary="Batch Registration" />
+              </ListItem>
+            </List>
+          </Collapse>
+
+          <ListItem
+            button
+            onClick={handleCourseModuleClick}
+            sx={{
+              my: 1.5,
+              borderRadius: '8px',
+              '&:hover': {
+                backgroundColor: 'rgba(255, 255, 255, 0.6)',
+                backdropFilter: 'blur(10px)',
+                boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
+              },
+            }}
+          >
+            <ListItemIcon>
+              <Book />
+            </ListItemIcon>
+            {open && <ListItemText primary="Course Module" />}
+            {open && (courseModuleOpen ? <ExpandLess /> : <ExpandMore />)}
+          </ListItem>
+          <Collapse in={courseModuleOpen} timeout="auto" unmountOnExit>
+            <List component="div" disablePadding>
+              <ListItem
+                button
+                component={Link}
+                to="/dashboard/course"
+                sx={{
+                  pl: 4,
+                  backgroundColor: 'white',
+                  borderRadius: '8px',
+                  boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
+                  my: 0.5,
+                  '&:hover': {
+                    backgroundColor: '#f5f5f5',
+                  },
+                }}
+              >
+                <ListItemIcon>
+                  <Add />
+                </ListItemIcon>
+                <ListItemText primary="Add Course" />
+              </ListItem>
+              <ListItem
+                button
+                component={Link}
+                to="/dashboard/manage-course-category"
+                sx={{
+                  pl: 4,
+                  backgroundColor: 'white',
+                  borderRadius: '8px',
+                  boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
+                  my: 0.5,
+                  '&:hover': {
+                    backgroundColor: '#f5f5f5',
+                  },
+                }}
+              >
+                <ListItemIcon>
+                  <ListAlt />
+                </ListItemIcon>
+                <ListItemText primary="Add Course Category" />
+              </ListItem>
+            </List> 
+          </Collapse>
+          
+          <ListItem
+            button
+            onClick={handleStudentManagementClick}
+            sx={{
+              my: 1.5,
+              borderRadius: '8px',
+              '&:hover': {
+                backgroundColor: 'rgba(255, 255, 255, 0.6)',
+                backdropFilter: 'blur(10px)',
+                boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
+              },
+            }}
+          >
+            <ListItemIcon>
+              <Person />
+            </ListItemIcon>
+            {open && <ListItemText primary="Student Management" />}
+            {open && (studentManagementOpen ? <ExpandLess /> : <ExpandMore />)}
+          </ListItem>
+          <Collapse in={studentManagementOpen} timeout="auto" unmountOnExit>
+            <List component="div" disablePadding>
+
+            <ListItem
+                button
+                component={Link}
+                to="/dashboard/student-registration"
+                sx={{
+                  pl: 4,
+                  backgroundColor: 'white',
+                  borderRadius: '8px',
+                  boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
+                  my: 0.5,
+                  '&:hover': {
+                    backgroundColor: '#f5f5f5',
+                  },
+                }}
+              >
+                <ListItemIcon>
+                  <Add />
+                </ListItemIcon>
+                <ListItemText primary="Student Registration" />
+              </ListItem>
+              
+              <ListItem
+                button
+                component={Link}
+                to="/dashboard/applied-student"
+                sx={{
+                  pl: 4,
+                  backgroundColor: 'white',
+                  borderRadius: '8px',
+                  boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
+                  my: 0.5,
+                  '&:hover': {
+                    backgroundColor: '#f5f5f5',
+                  },
+                }}
+              >
+                <ListItemIcon>
+                  <ListAlt />
+                </ListItemIcon>
+                <ListItemText primary="Applied Student" />
+              </ListItem>
+              
+              <ListItem
+                button
+                component={Link}
+                to="/dashboard/registered-students"
+                sx={{
+                  pl: 4,
+                  backgroundColor: 'white',
+                  borderRadius: '8px',
+                  boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
+                  my: 0.5,
+                  '&:hover': {
+                    backgroundColor: '#f5f5f5',
+                  },
+                }}
+              >
+                <ListItemIcon>
+                  <Category />
+                </ListItemIcon>
+                <ListItemText primary="Registered Students" />
+              </ListItem>
+
+              <ListItem
+                button
+                component={Link}
+                to="/dashboard/all-students"
+                sx={{
+                  pl: 4,
+                  backgroundColor: 'white',
+                  borderRadius: '8px',
+                  boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
+                  my: 0.5,
+                  '&:hover': {
+                    backgroundColor: '#f5f5f5',
+                  },
+                }}
+              >
+                <ListItemIcon>
+                  <PeopleIcon />
+                </ListItemIcon>
+                <ListItemText primary="All Students" />
+              </ListItem>
+            </List>
+          </Collapse>
 
           <ListItem
             button
@@ -141,7 +369,7 @@ const Sidebar = () => {
             </ListItemIcon>
             {open && <ListItemText primary="Student Attendance" />}
           </ListItem>
-
+          
           
           {/* <ListItem
             button
@@ -207,7 +435,7 @@ const Sidebar = () => {
             </List>
           </Collapse> */}
           
-          {/* <ListItem
+          <ListItem
             button
             onClick={handleStudyMaterialClick}
             sx={{
@@ -249,7 +477,7 @@ const Sidebar = () => {
                 <ListItemText primary="View Study Material" />
               </ListItem>
             </List>
-          </Collapse> */}
+          </Collapse>
 
           <ListItem
             button
