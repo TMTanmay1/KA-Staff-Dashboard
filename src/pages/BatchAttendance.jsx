@@ -1,19 +1,36 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { TextField, InputAdornment, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Box, Typography, Grid, Button, Pagination } from '@mui/material';
+import { TextField, InputAdornment, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Box, Typography, Grid, Button, Pagination,Snackbar,
+  Alert, CircularProgress  } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
+import axios from 'axios';
 
 function BatchAttendance() {
   const { batchId } = useParams(); // Get batchName from URL params
+  const [students, setStudents] = useState([]);
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState('');
+  const [snackbarSeverity, setSnackbarSeverity] = useState('success');
+  const [loading, setLoading] = useState(false);
 
-  // Dummy student data
-  const [students] = useState([
-    { id: 1, studentName: 'John Doe', batchName: 'BatchA' },
-    { id: 2, studentName: 'Jane Smith', batchName: 'BatchA' },
-    { id: 3, studentName: 'Michael Brown', batchName: 'BatchA' },
-    { id: 4, studentName: 'Emily White', batchName: 'BatchA' },
-  ]);
+  useEffect(() => {
+    const fetchStudents = async () => {
+      try {
+        const response = await axios.get(`https://crpch.in/api/ka/student/student_of_batches/?id=${batchId}`, {
+          headers: {
+            Authorization: `Token ${localStorage.getItem('authToken')}`,
+          },
+        });
+        setStudents(response.data.table_data);
+      } catch (error) {
+        console.error('Error fetching students:', error);
+      }
+    };
 
+    fetchStudents();
+  }, []);
+
+  
   // State for search query
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -31,6 +48,36 @@ function BatchAttendance() {
     return `${day}/${month}/${year}`;
   };
 
+  const handleAttendance = async (studentId, status) => {
+    const [month, year] = attendanceDate.split('/').slice(1);
+    try {
+      setLoading(true);
+      const response = await axios.post(`https://crpch.in/api/ka/student/take_attendance/?id=${studentId}`, {
+        of_month: month,
+        year: year,
+        attend: status === 'P',
+        leave: status === 'A',
+        student_id: studentId,
+      }, {
+        headers: {
+          Authorization: `Token ${localStorage.getItem('authToken')}`,
+        },
+      });
+      if (response.status === 200) {
+        setSnackbarMessage('Attendance marked successfully');
+        setSnackbarSeverity('success');
+      }
+    } catch (error) {
+      console.error('Error marking attendance:', error);
+      setSnackbarMessage('Failed to mark attendance! try again.');
+      setSnackbarSeverity('error');
+    } finally {
+      setSnackbarOpen(true);
+      setLoading(false);
+    }
+  };
+
+  
   // Get the current date and format it
   useEffect(() => {
     const today = new Date();
@@ -39,13 +86,16 @@ function BatchAttendance() {
 
   // Filtered students based on search query
   const filteredStudents = students.filter((student) =>
-    student.studentName.toLowerCase().includes(searchQuery.toLowerCase())
+    student.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   // Handle pagination change
   const handlePageChange = (event, value) => {
     setPage(value);
   };
+
+
+  
 
   return (
     <Box sx={{ padding: { xs: 2, sm: 3 }, width: '100%', maxWidth: '1200px', margin: 'auto' }}>
@@ -59,7 +109,7 @@ function BatchAttendance() {
           fontSize: { xs: '1.5rem', sm: '2rem', md: '2.5rem' } 
         }}
       >
-        {batchId} - Attendance
+        Attendance
       </Typography>
 
       {/* Search Bar and Attendance Date */}
@@ -110,21 +160,25 @@ function BatchAttendance() {
       .map((student) => (
         <TableRow key={student.id}>
           <TableCell align="center" sx={{ fontSize: { xs: '0.8rem', sm: '1rem' } }}>
-            {student.studentName}
+            {student.name}
           </TableCell>
           <TableCell align="center" sx={{ fontSize: { xs: '0.8rem', sm: '1rem' } }}>
-            {student.batchName}
+            {student.BATCH.BATCH_name}
           </TableCell>
           <TableCell align="center">
             <Button
               variant="contained"
               sx={{ backgroundColor: 'red', minWidth: { xs: '30px', sm: '40px' }, marginRight: 1 }}
+              onClick={() => handleAttendance(student.id, 'A')}
+              disabled={loading}
             >
               A
             </Button>
             <Button
               variant="contained"
               sx={{ backgroundColor: 'green', minWidth: { xs: '30px', sm: '40px' } }}
+              onClick={() => handleAttendance(student.id, 'P')}
+              disabled={loading}
             >
               P
             </Button>
@@ -150,6 +204,16 @@ function BatchAttendance() {
           sx={{ display: 'flex', justifyContent: 'center', padding: 2, fontSize: { xs: '0.8rem', sm: '1rem' } }}
         />
       </TableContainer>
+
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={1000}
+        onClose={() => setSnackbarOpen(false)}
+      >
+        <Alert onClose={() => setSnackbarOpen(false)} severity={snackbarSeverity}>
+          {snackbarMessage}
+        </Alert>
+      </Snackbar>
     </Box>
   );
 }

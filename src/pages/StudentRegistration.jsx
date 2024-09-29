@@ -167,7 +167,8 @@ const StudentRegistration = () => {
       student_photo: p,
       student_document: d,
       student_sign: s,
-      password:''
+      password:'',
+      reg_no: '',
     };
 
     console.log('Payload:', payload);

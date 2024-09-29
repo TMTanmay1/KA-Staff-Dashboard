@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState , useEffect} from 'react';
 import {
   Box,
   TextField,
@@ -13,26 +13,65 @@ import {
   TableHead,
   TableRow,
   Paper,
+  Snackbar,
+  Alert
 } from '@mui/material';
+import { useParams } from 'react-router-dom';
 import SearchIcon from '@mui/icons-material/Search';
+import axios from 'axios';
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
 
 function ViewAttendance() {
+  const { batchId } = useParams();
   const [date, setDate] = useState(''); // Date state
   const [searchQuery, setSearchQuery] = useState(''); // Search query state
-  const [students] = useState([
-    { id: 1, studentName: 'John Doe', attendance: 'Present' },
-    { id: 2, studentName: 'Jane Smith', attendance: 'Absent' },
-    { id: 3, studentName: 'Michael Brown', attendance: 'Present' },
-  ]); // Example students data
+  const [students, setStudents] = useState([]); // Example students data
+
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState('');
+  const [snackbarSeverity, setSnackbarSeverity] = useState('success');
+
+  const fetchStudents = async () => {
+    try {
+      const response = await axios.get(`https://crpch.in/api/ka/student/search_date/?date=${date}&id=${batchId}`, {
+        headers: {
+          Authorization: `Token ${localStorage.getItem('authToken')}`,
+        },
+      });
+      setStudents(response.data.table_data);
+    } catch (error) {
+      console.error('Error fetching students:', error);
+    }
+  };
+
+  const handleDelete = async (Id) => {
+    try {
+      const response = await axios.delete(`https://crpch.in/api/ka/student/take_attendance/?id=${Id}`, {
+        headers: {
+          Authorization: `Token ${localStorage.getItem('authToken')}`,
+        },
+      });
+
+      const updatedStudents = students.filter((student) => student.id !== studentId);
+
+      setSnackbarMessage('Attendance deleted successfully');
+      setSnackbarSeverity('success');
+      setSnackbarOpen(true);
+      
+    } catch (error) {
+      console.error('Error deleting attendance:', error);
+      setSnackbarMessage('Error deleting attendance');
+      setSnackbarSeverity('error');
+      setSnackbarOpen(true);
+    }
+  };
 
   const filteredStudents = students.filter((student) =>
-    student.studentName.toLowerCase().includes(searchQuery.toLowerCase())
+    student.student.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const handleView = () => {
-    // Implement the logic for viewing attendance based on the selected date
-    console.log('Selected Date:', date);
-  };
+ 
 
   return (
     <Box sx={{ padding: 3 }}>
@@ -71,7 +110,7 @@ function ViewAttendance() {
             }}
             sx={{ marginRight: 2 }}
           />
-          <Button variant="contained" onClick={handleView}>
+          <Button variant="contained" onClick={fetchStudents}>
             View
           </Button>
         </Grid>
@@ -87,19 +126,26 @@ function ViewAttendance() {
             <TableRow sx={{ backgroundColor: '#f1f1f1' }}>
               <TableCell align="center">Student Name</TableCell>
               <TableCell align="center">Attendance</TableCell>
+              <TableCell align="center">Action</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {filteredStudents.length > 0 ? (
               filteredStudents.map((student) => (
                 <TableRow key={student.id}>
-                  <TableCell align="center">{student.studentName}</TableCell>
-                  <TableCell align="center">{student.attendance}</TableCell>
+                  <TableCell align="center">{student.student}</TableCell>
+                  <TableCell align="center">{student.attend == true ? 'Present': 'Absent'}</TableCell>
+                  <TableCell align="center">
+                    <EditIcon color="primary" style={{ cursor: 'pointer', marginRight: '10px' }} />
+                    <DeleteIcon color="secondary" style={{ cursor: 'pointer' ,marginRight: '10px' }} 
+                    onClick={() => handleDelete(student.id)}
+                    />
+                  </TableCell>
                 </TableRow>
               ))
             ) : (
               <TableRow>
-                <TableCell align="center" colSpan={2}>
+                <TableCell align="center" colSpan={3}>
                   No attendance data found
                 </TableCell>
               </TableRow>
@@ -107,6 +153,16 @@ function ViewAttendance() {
           </TableBody>
         </Table>
       </TableContainer>
+
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={1000}
+        onClose={() => setSnackbarOpen(false)}
+      >
+        <Alert onClose={() => setSnackbarOpen(false)} severity={snackbarSeverity}>
+          {snackbarMessage}
+        </Alert>
+      </Snackbar>
     </Box>
   );
 }

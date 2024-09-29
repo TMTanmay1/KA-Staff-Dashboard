@@ -1,23 +1,41 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { TextField, InputAdornment, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Box, Typography, Grid, Button } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 function Attendance() {
   const navigate = useNavigate();
-  // Initial batch data
-  const [batches] = useState([
-    { id: 1, batchName: 'Batch A', students: 20 },
-    { id: 2, batchName: 'Batch B', students: 15 },
-    { id: 3, batchName: 'Batch C', students: 25 },
-  ]);
+  const Token = localStorage.getItem('authToken');
+  const [batches, setBatches] = useState([]);
+
+  useEffect(() => {
+    const fetchBatches = async () => {
+      try {
+        const response = await axios.get('https://crpch.in/api/ka/student/batch_total_students/', {
+          headers: {
+            Authorization: `Token ${Token}`,
+          },
+        });
+        setBatches(response.data.table_data);
+      } catch (error) {
+        console.error('Error fetching batches:', error);
+      }
+    };
+
+    fetchBatches();
+  }, []);
+
+
+
+
 
   // State for search query
   const [searchQuery, setSearchQuery] = useState('');
 
   // Filtered batches based on search query
   const filteredBatches = batches.filter((batch) =>
-    batch.batchName.toLowerCase().includes(searchQuery.toLowerCase())
+    batch.batch_name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   const handleMarkAttendance = (batchId) => {
@@ -25,7 +43,7 @@ function Attendance() {
   };
 
   const handleViewAttendance = (batchId) => {
-    navigate(`/dashboard/view-attendance/${batchId}`);
+    navigate(`/dashboard/view-attendance/${batchId}`, );
   };
 
   return (
@@ -72,16 +90,16 @@ function Attendance() {
                 {filteredBatches.map((batch) => (
                   <TableRow key={batch.id}>
                     <TableCell align="center" component="th" scope="row">
-                      {batch.batchName}
+                      {batch.batch_name}
                     </TableCell>
-                    <TableCell align="center">{batch.students}</TableCell>
+                    <TableCell align="center">{batch.no_of_students}</TableCell>
                     <TableCell align="center">
                       <Grid container spacing={1} justifyContent="center">
                         <Grid item>
                           <Button 
                             variant="contained" 
                             color="primary" 
-                            onClick={() => handleMarkAttendance(batch.batchName)}
+                            onClick={() => handleMarkAttendance(batch.id)}
                           >
                             Take Attendance
                           </Button>
@@ -90,7 +108,7 @@ function Attendance() {
                           <Button 
                             variant="contained" 
                             color="secondary" 
-                            onClick={() => handleViewAttendance(batch.batchName)}
+                            onClick={() => handleViewAttendance(batch.id)}
                           >
                             View Attendance
                           </Button>
