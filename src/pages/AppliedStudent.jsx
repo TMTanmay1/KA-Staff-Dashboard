@@ -185,7 +185,6 @@ const AppliedStudent = () => {
                       open={Boolean(anchorEl) && selectedStudent?.id === student.id}
                       onClose={handleMenuClose}
                     >
-                      <MenuItem onClick={handleViewProfile}>View</MenuItem>
                       <MenuItem onClick={handleOnboardClick}>Onboard</MenuItem>
                       <MenuItem onClick={()=>{
                         handleDeleteApplied(student.id);
