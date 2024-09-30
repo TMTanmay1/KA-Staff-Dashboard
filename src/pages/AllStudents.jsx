@@ -148,7 +148,9 @@ const AllStudents = () => {
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                 .map((student) => (
                   <TableRow key={student.id}>
-                    <TableCell align="center">{student.name}</TableCell>
+                    <TableCell align="center">{
+                      student.name? student.name : "Name not registered"
+                      }</TableCell>
                     <TableCell align="center">
   {student.BATCH ? student.BATCH.BATCH_name : "Batch not registered"}
 </TableCell>

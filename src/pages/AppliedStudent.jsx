@@ -173,10 +173,10 @@ const AppliedStudent = () => {
                   <TableCell align='center'>{student.dob}</TableCell>
                   <TableCell align='center'>{student.mobile_no}</TableCell>
                   <TableCell align='center'>{
-                    student.COURSE ? student.COURSE.COURSE_name : "Course not registered"
+                    student.COURSE.COURSE_name ? student.COURSE.COURSE_name : "Course not registered"
                     }</TableCell>
                   <TableCell align='center'>{
-                    student.COURSE ? student.COURSE.total_fees : "Course not registered"
+                   student.COURSE.COURSE_fee ? student.COURSE.COURSE_fee : "Course not registered"
                     }</TableCell>
                   <TableCell align='center'>
                     <IconButton

@@ -459,7 +459,7 @@ const BatchRegistration = () => {
                   <TableRow key={batch.id}>
                     <TableCell align='center'>{batch.BATCH_name}</TableCell>
                     <TableCell align='center'>{
-                      batch.COURSE ? batch.COURSE.COURSE_name : "Course not registered"
+                      batch.COURSE.COURSE_name ? batch.COURSE.COURSE_name : "Course not registered"
                       }</TableCell>
                     <TableCell align='center'>{batch.start_date}</TableCell>
                     <TableCell align='center'>{batch.end_date}</TableCell>
