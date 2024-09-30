@@ -172,8 +172,12 @@ const AppliedStudent = () => {
                   <TableCell align='center'>{student.name}</TableCell>
                   <TableCell align='center'>{student.dob}</TableCell>
                   <TableCell align='center'>{student.mobile_no}</TableCell>
-                  <TableCell align='center'>{student.COURSE.COURSE_name}</TableCell>
-                  <TableCell align='center'>{student.COURSE.COURSE_fee}</TableCell>
+                  <TableCell align='center'>{
+                    student.COURSE ? student.COURSE.COURSE_name : "Course not registered"
+                    }</TableCell>
+                  <TableCell align='center'>{
+                    student.COURSE ? student.COURSE.total_fees : "Course not registered"
+                    }</TableCell>
                   <TableCell align='center'>
                     <IconButton
                       onClick={(event) => handleMenuClick(event, student)}

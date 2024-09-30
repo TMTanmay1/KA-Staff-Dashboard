@@ -153,7 +153,9 @@ const AllStudents = () => {
   {student.BATCH ? student.BATCH.BATCH_name : "Batch not registered"}
 </TableCell>
 
-                    <TableCell align="center">{student.COURSE.COURSE_name}</TableCell>
+                    <TableCell align="center">{
+                      student.COURSE ? student.COURSE.course_name : "Course not registered"
+                      }</TableCell>
                     <TableCell align="center">{student.gender}</TableCell>
                     <TableCell align="center">{student.mobile_no}</TableCell>
                     <TableCell align="center">

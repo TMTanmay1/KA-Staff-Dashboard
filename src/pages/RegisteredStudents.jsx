@@ -207,7 +207,9 @@ const RegisteredStudents = () => {
                   <TableCell align='center'>{student.name}</TableCell>
                   {/* <TableCell align='center'>{student.BATCH.BATCH_name}</TableCell> */}
                   <TableCell align='center'>{student.BATCH ? student.BATCH.BATCH_name : 'Batch not registered'}</TableCell>
-                  <TableCell align='center'>{student.COURSE.COURSE_name}</TableCell>
+                  <TableCell align='center'>{
+                    student.COURSE ? student.COURSE.COURSE_name : 'Course not registered'
+                    }</TableCell>
                   <TableCell align='center'>{student.COURSE.COURSE_fee - student.total_paid_amount}</TableCell>
                   <TableCell align='center'>{student.mobile_no}</TableCell>
                   <TableCell align='center'>
