@@ -1,18 +1,37 @@
 import React from 'react';
-import { Box, Toolbar, Typography } from '@mui/material';
+import { Box, Toolbar, Typography, Snackbar,
+  Alert, } from '@mui/material';
 import { Outlet, useNavigate } from 'react-router-dom';
 import Sidebar from './Sidebar';
 import { Button } from 'antd';
 import Cookies from 'js-cookie';
-
+import axios from 'axios';
 
 const AppLayout = () => {
   const navigate = useNavigate();
 
-  const handleLogout = () => {
-    localStorage.removeItem('authToken');
-    Cookies.remove('Login');
-    navigate('/');
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState('');
+  const [snackbarSeverity, setSnackbarSeverity] = useState('info');
+
+  const handleLogout = async() => {
+    const token = localStorage.getItem('authToken');
+    try {
+      const response = await axios.get('https://crpch.in/api/ka/staff/logout/', {
+        headers: {
+          Authorization: `Token ${token}`,
+        },
+      });
+      
+      localStorage.removeItem('authToken');
+      Cookies.remove('Login');
+      navigate('/');
+    } catch (error) {
+      console.error(error);
+      setSnackbarMessage('Failed to logout');
+      setSnackbarSeverity('error');
+      setSnackbarOpen(true);
+    } 
   }
   
   return (
@@ -57,6 +76,12 @@ const AppLayout = () => {
           <Outlet />
         </Box>
       </Box>
+
+      <Snackbar open={snackbarOpen} autoHideDuration={6000} onClose={handleCloseSnackbar}>
+        <Alert onClose={handleCloseSnackbar} severity={snackbarSeverity}>
+          {snackbarMessage}
+        </Alert>
+      </Snackbar>
     </Box>
   );
 };
