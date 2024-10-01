@@ -1,4 +1,4 @@
-import React from 'react';
+import React , { useState, useEffect }from 'react';
 import { Box, Toolbar, Typography, Snackbar,
   Alert, } from '@mui/material';
 import { Outlet, useNavigate } from 'react-router-dom';
@@ -33,6 +33,11 @@ const AppLayout = () => {
       setSnackbarOpen(true);
     } 
   }
+
+  const handleCloseSnackbar = () => {
+    setSnackbarOpen(false);
+  };
+
   
   return (
     <Box sx={{ display: 'flex', height: '100vh' }}>
