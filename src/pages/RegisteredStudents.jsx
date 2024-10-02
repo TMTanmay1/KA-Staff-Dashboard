@@ -223,7 +223,7 @@ const RegisteredStudents = () => {
                       open={Boolean(anchorEl) && selectedStudent?.id === student.id}
                       onClose={handleMenuClose}
                     >
-                      <MenuItem onClick={handleViewProfile}>View</MenuItem>
+                      {/* <MenuItem onClick={handleViewProfile}>View</MenuItem> */}
                       <MenuItem onClick={handleAddFee}>Add Fee</MenuItem>
                       <MenuItem onClick={handleViewLedger}>View Ledger</MenuItem>
                       {/* <MenuItem onClick={handleMenuClose}>Mark Dropout</MenuItem> */}
