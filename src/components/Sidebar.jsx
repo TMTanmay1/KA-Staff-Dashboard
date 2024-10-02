@@ -16,6 +16,7 @@ const Sidebar = () => {
   const [assetOpen, setAssetOpen] = useState(false)
   const [studyMaterialOpen, setStudyMaterialOpen] = useState(false)
   const [attendanceOpen, setAttendanceOpen] = useState(false)
+  const [staffAttendanceOpen, setStaffAttendanceOpen] = useState(false)
 
   const toggleDrawer = () => {
     setOpen(!open);
@@ -41,6 +42,10 @@ const Sidebar = () => {
     setAttendanceOpen(!attendanceOpen);
   };
 
+  const handleStaffAttendanceClick = () => {
+    setStaffAttendanceOpen(!staffAttendanceOpen);
+  };
+
   useEffect(() => {
     if (!open) {
       setBatchManagementOpen(false);
@@ -49,6 +54,7 @@ const Sidebar = () => {
       setAssetOpen(false);
       setStudyMaterialOpen(false);
       setAttendanceOpen(false);
+      setStaffAttendanceOpen(false);
     }
   }, [open]);
 
@@ -497,7 +503,26 @@ const Sidebar = () => {
             </ListItemIcon>
             {open && <ListItemText primary="View Profile" />}
           </ListItem>
-
+          
+          <ListItem
+            button
+            component={Link} to="/dashboard/staff-attendance"
+            onClick={handleStaffAttendanceClick}
+            sx={{
+              my: 1.5,
+              borderRadius: '8px',
+              '&:hover': {
+                backgroundColor: 'rgba(255, 255, 255, 0.6)',
+                backdropFilter: 'blur(10px)',
+                boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
+              },
+            }}
+          >
+            <ListItemIcon>
+              <HowToRegIcon />
+            </ListItemIcon>
+            {open && <ListItemText primary="Mark Your Attendance" />}
+          </ListItem>
         </List>
       </Drawer>
     </>

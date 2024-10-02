@@ -18,6 +18,7 @@ import LedgerPage from './pages/LedgerPage.jsx';
 import OnboardingStudent from './pages/OnboardingStudent.jsx';
 import RegisteredStudents from './pages/RegisteredStudents.jsx';
 import StudentRegistration from './pages/StudentRegistration.jsx';
+import StaffAttendace from './pages/StaffAttendace.jsx';
 
 function App() {
   return (
@@ -44,6 +45,7 @@ function App() {
           <Route path="/dashboard/view-ledger" element={<LedgerPage />} />
           <Route path="/dashboard/all-students" element={<AllStudents />} />
           <Route path="/dashboard/study-material" element={<StudyMaterial />} />
+          <Route path="/dashboard/staff-attendance" element={<StaffAttendace />} />
         </Route>
       </Routes>
       </Router>

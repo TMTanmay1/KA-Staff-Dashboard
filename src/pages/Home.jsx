@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Box, Container, Typography, Grid, Card, CardContent, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, TextField, IconButton, TablePagination, Button } from '@mui/material';
+import { Box, Container, Typography, Grid, Card, CardContent, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, TextField, IconButton, TablePagination, Button , Snackbar,
+  Alert,} from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 
 
@@ -39,6 +40,14 @@ const Home = () => {
     points: 0,
   });
 
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState('');
+  const [snackbarSeverity, setSnackbarSeverity] = useState('info');
+
+  const handleCloseSnackbar = () => {
+    setSnackbarOpen(false);
+  };
+
 
   useEffect(() => {
     console.log(id);
@@ -76,7 +85,39 @@ const Home = () => {
     // fetchDashboardData();
   }, []);
 
+  const updateTask = (taskId) => async () => {
+    try {
+      const response = await axios.put(`https://crpch.in/api/ka/staff/task-assign/?id=${taskId}`, {
+        task_complete: 'True',
+      }, {
+        headers: {
+          Authorization: `Token ${Token}`,
+        },
+      });
 
+      if (response.status === 200) {
+        setSnackbarMessage('Task marked as done');
+        setSnackbarSeverity('success');
+        setSnackbarOpen(true);
+
+        setSampleData(sampleData.map(row => {
+          if (row.id === taskId) {
+            return {
+              ...row,
+              task_complete: 'True',
+            };
+          }
+          return row;
+        }
+        ));
+      }
+    } catch (error) {
+      console.error('Error updating task:', error);
+      setSnackbarMessage('Error updating task');
+      setSnackbarSeverity('error');
+      setSnackbarOpen(true);
+    }
+  };
 
   // Filter data based on search term
   const filteredData = sampleData.filter(row =>
@@ -251,7 +292,7 @@ const Home = () => {
         .map((row, index) => (
           <TableRow key={row.id}
             sx={{
-              color: row.task_complete ? 'green' : 'red' , // Conditional row text color
+              color: row.task_complete === 'True' ? 'green' : 'red', // Conditional row text color
             }}
           >
             <TableCell align='center' sx={{ color: 'inherit' }}>{index + 1}</TableCell>
@@ -259,8 +300,8 @@ const Home = () => {
             <TableCell align='center' sx={{ color: 'inherit' }}>{row.task_description}</TableCell>
             <TableCell align='center' sx={{ color: 'inherit' }}>{row.task_from }</TableCell>
             <TableCell align='center' sx={{ color: 'inherit' }}>{row.task_to}</TableCell>
-            <TableCell align='center'>
-              <Button variant="contained" color="primary" size="small">
+            <TableCell align='center' onClick={updateTask(row.id)}>
+              <Button variant="contained" color="primary" size="small" >
                 Mark As Done
               </Button>
             </TableCell>
@@ -289,6 +330,12 @@ const Home = () => {
           />
         </Box>
       </Box>
+
+      <Snackbar open={snackbarOpen} autoHideDuration={1000} onClose={handleCloseSnackbar}>
+        <Alert onClose={handleCloseSnackbar} severity={snackbarSeverity}>
+          {snackbarMessage}
+        </Alert>
+      </Snackbar>
     </Container>
   );
 };

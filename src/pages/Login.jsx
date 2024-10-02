@@ -13,10 +13,10 @@ const Login = () => {
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
   const [snackbarSeverity, setSnackbarSeverity] = useState('info');
-  const [latitude, setLatitude] = useState(null);
-  const [longitude, setLongitude] = useState(null);
-  const [imageData, setImageData] = useState(null);  // State to store image data
-  const videoRef = useRef(null); // To reference the video element
+  // const [latitude, setLatitude] = useState(null);
+  // const [longitude, setLongitude] = useState(null);
+  // const [imageData, setImageData] = useState(null);  
+  // const videoRef = useRef(null); 
   const navigate = useNavigate();
 
   // useEffect(() => {
@@ -27,45 +27,51 @@ const Login = () => {
   // }, []);
 
   useEffect(() => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          setLatitude(position.coords.latitude);
-          setLongitude(position.coords.longitude);
-          setSnackbarMessage('Location access granted. Please login to continue.');
-          setSnackbarSeverity('success');
-          setSnackbarOpen(true);
-        },
-        (error) => {
-          console.error('Error getting location: ', error);
-          setSnackbarMessage('Location access denied. Please enable location services.');
-          setSnackbarSeverity('warning');
-          setSnackbarOpen(true);
-        }
-      );
-    } else {
-      setSnackbarMessage('Geolocation is not supported by this browser.');
-      setSnackbarSeverity('error');
-      setSnackbarOpen(true);
+    if (Cookies.get('Login')) {
+      navigate('/dashboard');
     }
   }, [navigate]);
+
+  // useEffect(() => {
+  //   if (navigator.geolocation) {
+  //     navigator.geolocation.getCurrentPosition(
+  //       (position) => {
+  //         setLatitude(position.coords.latitude);
+  //         setLongitude(position.coords.longitude);
+  //         setSnackbarMessage('Location access granted. Please login to continue.');
+  //         setSnackbarSeverity('success');
+  //         setSnackbarOpen(true);
+  //       },
+  //       (error) => {
+  //         console.error('Error getting location: ', error);
+  //         setSnackbarMessage('Location access denied. Please enable location services.');
+  //         setSnackbarSeverity('warning');
+  //         setSnackbarOpen(true);
+  //       }
+  //     );
+  //   } else {
+  //     setSnackbarMessage('Geolocation is not supported by this browser.');
+  //     setSnackbarSeverity('error');
+  //     setSnackbarOpen(true);
+  //   }
+  // }, [navigate]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if(!latitude && !longitude) {
-      setSnackbarMessage('Location and image access required. Please enable location services and camera access.');
-      setSnackbarSeverity('warning');
-      setSnackbarOpen(true);
-      return;
-    }
+    // if(!latitude && !longitude) {
+    //   setSnackbarMessage('Location and image access required. Please enable location services and camera access.');
+    //   setSnackbarSeverity('warning');
+    //   setSnackbarOpen(true);
+    //   return;
+    // }
 
-    if(!imageData) {
-      setSnackbarMessage('Image access required. Please enable camera access and click image.');
-      setSnackbarSeverity('warning');
-      setSnackbarOpen(true);
-      return;
-    }
+    // if(!imageData) {
+    //   setSnackbarMessage('Image access required. Please enable camera access and click image.');
+    //   setSnackbarSeverity('warning');
+    //   setSnackbarOpen(true);
+    //   return;
+    // }
 
     try {
       const response = await fetch('https://crpch.in/api/ka/login/staff/', {
@@ -75,10 +81,7 @@ const Login = () => {
         },
         body: JSON.stringify({
           mobileno: mobileNo,
-          password: password,
-          lat: latitude,
-          longt: longitude,
-          image: imageData,
+          password: password
         }),
       });
 
@@ -86,6 +89,7 @@ const Login = () => {
       if (response.ok) {
         localStorage.setItem('authToken', result.data.token);
         localStorage.setItem('id', result.data.id);
+        localStorage.setItem('break_time', result.data.break_count);
         setSnackbarMessage('Login successful');
         setSnackbarSeverity('success');
         setSnackbarOpen(true);
@@ -114,44 +118,44 @@ const Login = () => {
   };
 
   // Camera handling
-  const openCamera = async () => {
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream;
-      }
-    } catch (error) {
-      setSnackbarMessage('Error accessing camera.');
-      setSnackbarSeverity('error');
-      setSnackbarOpen(true);
-      console.error('Error opening camera: ', error);
-    }
-  };
+  // const openCamera = async () => {
+  //   try {
+  //     const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+  //     if (videoRef.current) {
+  //       videoRef.current.srcObject = stream;
+  //     }
+  //   } catch (error) {
+  //     setSnackbarMessage('Error accessing camera.');
+  //     setSnackbarSeverity('error');
+  //     setSnackbarOpen(true);
+  //     console.error('Error opening camera: ', error);
+  //   }
+  // };
 
-  const takePhoto = () => {
-    const video = videoRef.current;
-    const canvas = document.createElement('canvas');
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
-    const ctx = canvas.getContext('2d');
-    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-    const imageDataUrl = canvas.toDataURL('image/png');
-    setImageData(imageDataUrl); // Store the captured image
-    // Stop the video stream
-    const stream = video.srcObject;
-    const tracks = stream.getTracks();
-    tracks.forEach((track) => track.stop());
+  // const takePhoto = () => {
+  //   const video = videoRef.current;
+  //   const canvas = document.createElement('canvas');
+  //   canvas.width = video.videoWidth;
+  //   canvas.height = video.videoHeight;
+  //   const ctx = canvas.getContext('2d');
+  //   ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+  //   const imageDataUrl = canvas.toDataURL('image/png');
+  //   setImageData(imageDataUrl); // Store the captured image
+  //   // Stop the video stream
+  //   const stream = video.srcObject;
+  //   const tracks = stream.getTracks();
+  //   tracks.forEach((track) => track.stop());
 
-    // Close the camera
-    setSnackbarMessage('Photo captured successfully.');
-    setSnackbarSeverity('success');
-    setSnackbarOpen(true);
+  //   // Close the camera
+  //   setSnackbarMessage('Photo captured successfully.');
+  //   setSnackbarSeverity('success');
+  //   setSnackbarOpen(true);
 
-  };
+  // };
 
-  console.log('latitude', latitude);
-  console.log('longitude', longitude);
-  console.log('imageData', imageData);
+  // console.log('latitude', latitude);
+  // console.log('longitude', longitude);
+  // console.log('imageData', imageData);
 
   return (
     <Container maxWidth={false} disableGutters sx={{ display: 'flex', height: '100vh'}}>
@@ -226,17 +230,7 @@ const Login = () => {
             </Button>
           </form>
 
-          {/* Button to open camera and take photo */}
-          <Button onClick={openCamera} fullWidth variant="outlined" color="secondary" sx={{ mt: 2 }}>
-            Open Camera
-          </Button>
-          <video ref={videoRef} autoPlay style={{ display: 'none' }}></video>
-
-          <Button onClick={takePhoto} fullWidth variant="outlined" color="secondary" sx={{ mt: 2 }}>
-            Take Photo
-          </Button>
         </Box>
-         {imageData && <img src={imageData} alt="Captured" style={{ marginTop: '20px', width: '100%' }} />}
       </Box>
 
       <Snackbar open={snackbarOpen} autoHideDuration={6000} onClose={handleCloseSnackbar}>

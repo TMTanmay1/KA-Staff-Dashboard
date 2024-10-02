@@ -14,24 +14,30 @@ const AppLayout = () => {
   const [snackbarMessage, setSnackbarMessage] = useState('');
   const [snackbarSeverity, setSnackbarSeverity] = useState('info');
 
-  const handleLogout = async() => {
-    const token = localStorage.getItem('authToken');
-    try {
-      const response = await axios.get('https://crpch.in/api/ka/staff/logout/', {
-        headers: {
-          Authorization: `Token ${token}`,
-        },
-      });
+  // const handleLogout = async() => {
+  //   const token = localStorage.getItem('authToken');
+  //   try {
+  //     const response = await axios.get('https://crpch.in/api/ka/staff/logout/', {
+  //       headers: {
+  //         Authorization: `Token ${token}`,
+  //       },
+  //     });
       
-      localStorage.removeItem('authToken');
-      Cookies.remove('Login');
-      navigate('/');
-    } catch (error) {
-      console.error(error);
-      setSnackbarMessage('Failed to logout');
-      setSnackbarSeverity('error');
-      setSnackbarOpen(true);
-    } 
+  //     localStorage.removeItem('authToken');
+  //     Cookies.remove('Login');
+  //     navigate('/');
+  //   } catch (error) {
+  //     console.error(error);
+  //     setSnackbarMessage('Failed to logout');
+  //     setSnackbarSeverity('error');
+  //     setSnackbarOpen(true);
+  //   } 
+  // }
+
+  const handleLogout = () => {
+    localStorage.removeItem('authToken');
+    Cookies.remove('Login');
+    navigate('/');
   }
 
   const handleCloseSnackbar = () => {
