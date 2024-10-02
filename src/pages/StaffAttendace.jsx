@@ -16,8 +16,9 @@ function StaffAttendance() {
   const [snackbarMessage, setSnackbarMessage] = useState('');
   const [snackbarSeverity, setSnackbarSeverity] = useState('info');
 
-  const [countdown, setCountdown] = useState(0);
+  const [countdown, setCountdown] = useState(break_time);
   const [isBreakOpen, setIsBreakOpen] = useState(false); 
+  const [isBreakPaused, setIsBreakPaused] = useState(false);
 
   const [disablePunchOut, setDisablePunchOut] = useState(false);
   const [isBreakDisabled, setIsBreakDisabled] = useState(false);
@@ -154,18 +155,35 @@ function StaffAttendance() {
   };
 
   // Countdown logic for break
+  // useEffect(() => {
+  //   let interval;
+  //   if (countdown > 0) {
+  //     interval = setInterval(() => {
+  //       setCountdown(prevCountdown => prevCountdown - 1);
+  //     }, 1000);
+  //   }
+  //   if (countdown === 0) {
+  //     clearInterval(interval);
+  //   }
+  //   return () => clearInterval(interval);
+  // }, [countdown]);
+
   useEffect(() => {
     let interval;
-    if (countdown > 0) {
-      interval = setInterval(() => {
-        setCountdown(prevCountdown => prevCountdown - 1);
-      }, 1000);
+    if (!isBreakPaused && countdown > 0) {
+        interval = setInterval(() => {
+            setCountdown(prevCountdown => prevCountdown - 1);
+            localStorage.setItem('break_time', countdown - 1);  // Update localStorage
+        }, 1000);
     }
+
     if (countdown === 0) {
-      clearInterval(interval);
+        clearInterval(interval);
+        setIsBreakDisabled(true); // Disable break button when countdown reaches 0
     }
+
     return () => clearInterval(interval);
-  }, [countdown]);
+}, [countdown, isBreakPaused]);
 
   // Format countdown as MM:SS
   const formatTime = (seconds) => {
@@ -189,15 +207,16 @@ function StaffAttendance() {
         setSnackbarOpen(true);
         return;
     }
-    setCountdown(break_time);
+    // setCountdown(break_time);
     setIsBreakOpen(true);
-    setIsBreakDisabled(true);
+    setIsBreakPaused(false);
   };
 
   // Stop button handler
   const handleStop = () => {
-    setCountdown(0);
-    setIsBreakDisabled(true); 
+    // setCountdown(0);
+    // setIsBreakOpen(true);
+    setIsBreakPaused(true);
   };
 
   // Close break dialog
@@ -318,9 +337,12 @@ function StaffAttendance() {
             <Typography variant="h1" color="primary">
               {formatTime(countdown)}
             </Typography>
-            <Button variant="contained" color="secondary" onClick={handleStop} sx={{ mt: 3 }}>
+            {/* <Button variant="contained" color="secondary" onClick={handleStop} sx={{ mt: 3 }}>
               Stop
-            </Button>
+            </Button> */}
+             <Button variant="contained" color="secondary" onClick={handleStop}>
+                            Pause
+                        </Button>
           </Box>
         </DialogContent>
       </Dialog>
