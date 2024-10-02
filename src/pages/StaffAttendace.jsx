@@ -3,6 +3,7 @@ import { Card, CardContent, Typography, Button, Grid, Box, Snackbar, Alert, Dial
 import axios from 'axios';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { useNavigate } from 'react-router-dom';
+import Cookies from 'js-cookie';
 
 function StaffAttendance() {
     const navigate = useNavigate();
@@ -91,6 +92,24 @@ function StaffAttendance() {
     return now.toISOString().split('T')[0];  // YYYY-MM-DD
   };
 
+
+  useEffect(() => {
+    const punchedIn = Cookies.get('punchedIn');
+    const punchedOut = Cookies.get('punchedOut');
+  
+    if (punchedIn) {
+      setDisablePunchIn(true);
+      setEnablePunchOut(true);
+    }
+  
+    if (punchedOut) {
+      setDisablePunchOut(true);
+    }
+  
+    // Optional: You could also clear cookies manually after some logic or action
+  }, []);
+
+  
   // Function to handle API call for punch in/out
   const handlePunch = async (actionType) => {
 
@@ -139,6 +158,7 @@ function StaffAttendance() {
           setEnablePunchOut(false);
         }
         else if(actionType === 'punchin') {
+          Cookies.set('punchedIn', true, { expires: 10 / 24 });  // 10 hours
             setEnablePunchOut(true);
             setDisablePunchIn(true);
         }
@@ -199,6 +219,7 @@ function StaffAttendance() {
         setSnackbarSeverity('success');
 
         if(actionType === 'punchout') {
+          Cookies.set('punchedOut', true, { expires: 10 / 24 });
           setDisablePunchOut(true);
           setEnablePunchOut(false);
         }
