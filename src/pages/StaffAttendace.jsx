@@ -254,22 +254,43 @@ function StaffAttendance() {
   //   return () => clearInterval(interval);
   // }, [countdown]);
 
+  const [isCountdownActive, setIsCountdownActive] = useState(false);
+
   useEffect(() => {
     let interval;
-    if (!isBreakPaused && countdown > 0) {
-        interval = setInterval(() => {
-            setCountdown(prevCountdown => prevCountdown - 1);
-            localStorage.setItem('break_time', countdown - 1);  // Update localStorage
-        }, 1000);
+    if (isCountdownActive && !isBreakPaused && countdown > 0) {
+      interval = setInterval(() => {
+        setCountdown((prevCountdown) => prevCountdown - 1);
+        localStorage.setItem('break_time', countdown - 1); // Update localStorage
+        console.log('Break Time:', countdown);
+      }, 1000);
     }
 
     if (countdown === 0) {
-        clearInterval(interval);
-        setIsBreakDisabled(true); // Disable break button when countdown reaches 0
+      clearInterval(interval);
+      setIsBreakDisabled(true); // Disable break button when countdown reaches 0
     }
 
     return () => clearInterval(interval);
-}, [countdown, isBreakPaused]);
+  }, [isCountdownActive, countdown, isBreakPaused]);
+
+  //   useEffect(() => {
+  //     let interval;
+  //     if (!isBreakPaused && countdown > 0) {
+  //         interval = setInterval(() => {
+  //             setCountdown(prevCountdown => prevCountdown - 1);
+  //             localStorage.setItem('break_time', countdown - 1);  
+  //             console.log('Break Time:', countdown);
+  //         }, 1000);
+  //     }
+
+  //     if (countdown === 0) {
+  //         clearInterval(interval);
+  //         setIsBreakDisabled(true); 
+  //     }
+
+  //     return () => clearInterval(interval);
+  // }, [countdown, isBreakPaused]);
 
   // Format countdown as MM:SS
   const formatTime = (seconds) => {
@@ -295,6 +316,7 @@ function StaffAttendance() {
     }
     // setCountdown(break_time);
     setIsBreakOpen(true);
+    setIsCountdownActive(true);
     setIsBreakPaused(false);
   };
 
