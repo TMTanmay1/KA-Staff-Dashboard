@@ -21,6 +21,7 @@ function StaffAttendance() {
   const [isBreakPaused, setIsBreakPaused] = useState(false);
 
   const [disablePunchOut, setDisablePunchOut] = useState(false);
+  const [disablePunchIn, setDisablePunchIn] = useState(false);
   const [isBreakDisabled, setIsBreakDisabled] = useState(false);
   const [enablePunchOut, setEnablePunchOut] = useState(false);
 
@@ -123,6 +124,70 @@ function StaffAttendance() {
 
     try {
       const response = await axios.post(`https://crpch.in/api/ka/student/punchin_punchout/?id=${id}`, body, {
+        headers: {
+          'Authorization': `Token ${Token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (response.status === 200) {
+        setSnackbarMessage(`${actionType === 'punchin' ? 'Punch In' : 'Punch Out'} successful`);
+        setSnackbarSeverity('success');
+
+        if(actionType === 'punchout') {
+          setDisablePunchOut(true);
+          setEnablePunchOut(false);
+        }
+        else if(actionType === 'punchin') {
+            setEnablePunchOut(true);
+            setDisablePunchIn(true);
+        }
+
+      } else {
+        setSnackbarMessage('Error occurred while punching');
+        setSnackbarSeverity('error');
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      setSnackbarMessage('Failed to communicate with server');
+      setSnackbarSeverity('error');
+    }
+
+    setSnackbarOpen(true);
+  };
+
+  const handlePunchOut = async (actionType) => {
+
+    if(!location.latitude && !location.longitude) {
+        setSnackbarMessage('Location not available');
+        setSnackbarSeverity('error');
+        setSnackbarOpen(true);
+        return;
+    }
+
+    if(!image) {
+        setSnackbarMessage('Please capture an image');
+        setSnackbarSeverity('error');
+        setSnackbarOpen(true);
+        return;
+    }
+
+    const loginTime = actionType === 'punchin' ? getCurrentTime() : '';
+    const logoutTime = actionType === 'punchout' ? getCurrentTime() : '';
+    
+    const body = {
+      login_time: loginTime,
+      lat: location.latitude,
+      longt: location.longitude,
+      image: image,
+      date: getCurrentDate(),
+      logout_time: logoutTime,
+    };
+
+    console.log('Punching:', body);
+
+    try {
+      const response = await axios.post(`https://crpch.in/api/ka/student/punchout/?id=${id}`, body, {
         headers: {
           'Authorization': `Token ${Token}`,
           'Content-Type': 'application/json',
@@ -259,12 +324,10 @@ function StaffAttendance() {
             sx={{
               backgroundColor: '#4caf50',
               transition: 'transform 0.3s',
-              cursor: 'pointer',
-              '&:hover': {
-                transform: 'scale(1.05)',
-              },
+              cursor: disablePunchIn ? 'not-allowed' : 'pointer',
+              '&:hover': disablePunchIn ? {} : { transform: 'scale(1.05)' },
             }}
-            onClick={() => handlePunch('punchin')}
+            onClick={disablePunchIn ? null : () => handlePunch('punchin')}
           >
             <CardContent>
               <Typography variant="h5" gutterBottom>
@@ -289,7 +352,7 @@ function StaffAttendance() {
               '&:hover': enablePunchOut && !disablePunchOut ? { transform: 'scale(1.05)' } : {},
               
             }}
-            onClick={enablePunchOut && !disablePunchOut ? () => handlePunch('punchout') : null}
+            onClick={enablePunchOut && !disablePunchOut ? () => handlePunchOut('punchout') : null}
           >
             <CardContent>
               <Typography variant="h5" gutterBottom>

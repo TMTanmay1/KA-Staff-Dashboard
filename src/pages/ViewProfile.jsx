@@ -17,7 +17,7 @@ const ViewProfile = () => {
   useEffect(() => {
     const fetchStudentProfile = async () => {
       try {
-        const response = await axios.get(`https://crpch.in/api/ka/student_profile/?student_id=${studentId}`, {
+        const response = await axios.get(`https://crpch.in/api/ka/staff/profile/?id=${studentId}`, {
           headers: {
             'Authorization': `Token ${Token}`
           }
@@ -36,12 +36,14 @@ const ViewProfile = () => {
     }
   }, [studentId, Token]);
 
+
+
   if (!studentData) {
     return <Typography>Loading...</Typography>; // Loader while fetching data
   }
 
   const {
-    name, email, mobile_no, address, student_photo, 
+    staff_name, email, mobile_no, address, staff_image, staff_unique_ids, 
     BATCH, COURSE, start_date, end_date, gender, dob , password
   } = studentData;
 
@@ -57,7 +59,7 @@ const ViewProfile = () => {
           {/* Profile Photo */}
           <Avatar
             // alt={name}
-            src={`https://crpch.in${student_photo}`}
+            src={`https://crpch.in${staff_image}`}
             sx={{
               width: 150,
               height: 150,
@@ -68,7 +70,7 @@ const ViewProfile = () => {
         </Box>
 
         <Typography variant="h4" gutterBottom align="center">
-          Student Profile
+          Staff Profile
         </Typography>
 
         <Grid container spacing={3}>
@@ -79,7 +81,10 @@ const ViewProfile = () => {
                 Basic Details
               </Typography>
               <Typography variant="body1" sx={{ mt: 2 }}>
-                <strong>Name:</strong> {name}
+                <strong>Staff ID:</strong> {staff_unique_ids}
+              </Typography>
+              <Typography variant="body1" sx={{ mt: 2 }}>
+                <strong>Name:</strong> {staff_name}
               </Typography>
               <Typography variant="body1" sx={{ mt: 1 }}>
                 <strong>Email:</strong> {email || "N/A"}
@@ -90,57 +95,16 @@ const ViewProfile = () => {
               <Typography variant="body1" sx={{ mt: 1 }}>
                 <strong>Address:</strong> {address}
               </Typography>
-              <Typography variant="body1" sx={{ mt: 1 }}>
+              {/* <Typography variant="body1" sx={{ mt: 1 }}>
                 <strong>Date of Birth:</strong> {dob}
               </Typography>
               <Typography variant="body1" sx={{ mt: 1 }}>
                 <strong>Gender:</strong> {gender}
-              </Typography>
+              </Typography> */}
               <Typography variant="body1" sx={{ mt: 1 }}>
                 <strong>Password:</strong> {password}
               </Typography>
 
-            </CardContent>
-          </Grid>
-
-          {/* Batch and Course Details */}
-          <Grid item xs={12} sm={6}>
-            <CardContent>
-              <Typography variant="h6" color="textSecondary">
-                Batch & Course Details
-              </Typography>
-
-              {batches.map((batch, index) => (
-                <Box key={index} sx={{ mt: 2 }}>
-                  <Typography variant="body1">
-                    <strong>Batch:</strong> {batch.BATCH_name}
-                  </Typography>
-                  {/* <Typography variant="body1" sx={{ mt: 1 }}>
-                    <strong>Start Date:</strong> {batch.start_date}
-                  </Typography>
-                  <Typography variant="body1" sx={{ mt: 1 }}>
-                    <strong>End Date:</strong> {batch.end_date}
-                  </Typography> */}
-                </Box>
-              ))}
-
-              {courses.map((course, index) => (
-                <Box key={index} sx={{ mt: 2 }}>
-                  <Typography variant="body1">
-                    <strong>Course:</strong> {course.COURSE_name}
-                  </Typography>
-                  <Typography variant="body1" sx={{ mt: 1 }}>
-                    <strong>Fee:</strong> ₹{course.COURSE_fee}
-                  </Typography>
-                </Box>
-              ))}
-
-              <Typography variant="body1" sx={{ mt: 1 }}>
-                <strong>Overall Start Date:</strong> {start_date}
-              </Typography>
-              <Typography variant="body1" sx={{ mt: 1 }}>
-                <strong>Overall End Date:</strong> {end_date}
-              </Typography>
             </CardContent>
           </Grid>
         </Grid>
