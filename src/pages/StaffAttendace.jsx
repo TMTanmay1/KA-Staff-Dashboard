@@ -4,6 +4,7 @@ import axios from 'axios';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { useNavigate } from 'react-router-dom';
 import Cookies from 'js-cookie';
+import { Tooltip } from '@mui/material';
 
 function StaffAttendance() {
     const navigate = useNavigate();
@@ -363,6 +364,7 @@ function StaffAttendance() {
       <Grid container spacing={3}>
         {/* Punch In Card */}
         <Grid item xs={12} md={4}>
+        <Tooltip title={disablePunchIn ? 'Already punched in' : ''}>
           <Card
             sx={{
               backgroundColor: '#4caf50',
@@ -381,10 +383,12 @@ function StaffAttendance() {
               </Typography>
             </CardContent>
           </Card>
+          </Tooltip>
         </Grid>
 
         {/* Punch Out Card */}
         <Grid item xs={12} md={4}>
+        <Tooltip title={enablePunchOut && disablePunchOut ? 'Already punched out' : ''}>
           <Card
             sx={{
               backgroundColor: '#f44336',
@@ -406,10 +410,12 @@ function StaffAttendance() {
               </Typography>
             </CardContent>
           </Card>
+          </Tooltip>
         </Grid>
 
         {/* Break Card */}
         <Grid item xs={12} md={4}>
+        <Tooltip title={isBreakDisabled ? 'Break is not available or Countdown is running' : ''}>
           <Card
             onClick={() => !isBreakDisabled && handleBreakClick()}
             sx={{
@@ -430,6 +436,7 @@ function StaffAttendance() {
               </Typography>
             </CardContent>
           </Card>
+          </Tooltip>
         </Grid>
       </Grid>
 
