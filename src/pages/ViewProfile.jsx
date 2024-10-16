@@ -7,6 +7,7 @@ import axios from 'axios';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 import FileDownloadIcon from '@mui/icons-material/FileDownload';
+import ScheduleIcon from '@mui/icons-material/Schedule';
 
 const ViewProfile = () => {
   const Token = localStorage.getItem('authToken');
@@ -17,6 +18,10 @@ const ViewProfile = () => {
   const [studentData, setStudentData] = useState(null);
   const idCardRef = useRef(null);
   const [isDownloading, setIsDownloading] = useState(false);
+
+  const [scheduleData, setScheduleData] = useState(null);
+  const scheduleCardRef = useRef(null);
+  const [isDownloadingSchedule, setIsDownloadingSchedule] = useState(false);
 
   // Fetch student profile data using API call
   useEffect(() => {
@@ -36,14 +41,31 @@ const ViewProfile = () => {
       }
     };
 
+    const fetchScheduleData = async () => {
+      try {
+        const response = await axios.get(`https://crpch.in/api/ka/staff/settings/?id=${studentId}`, {
+          headers: {
+            'Authorization': `Token ${Token}`
+          }
+        });
+        
+        if (response.data.status) {
+          setScheduleData(response.data.table_data[0]);
+        }
+      } catch (error) {
+        console.error('Error fetching schedule data:', error);
+      }
+    };
+
     if (studentId) {
       fetchStudentProfile();
+      fetchScheduleData();
     }
   }, [studentId, Token]);
 
 
 
-  if (!studentData) {
+  if (!studentData || !scheduleData) {
     return <Typography>Loading...</Typography>; // Loader while fetching data
   }
 
@@ -87,6 +109,38 @@ const ViewProfile = () => {
       setIsDownloading(false);
     }
   };
+
+  const downloadSchedulePDF = async () => {
+    if (!scheduleCardRef.current || !scheduleData) {
+      console.error("Schedule Card element not found or data not loaded");
+      return;
+    }
+
+    setIsDownloadingSchedule(true);
+
+    try {
+      const canvas = await html2canvas(scheduleCardRef.current);
+      const imgData = canvas.toDataURL("image/png");
+      const pdf = new jsPDF("p", "mm", "a4");
+
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = pdf.internal.pageSize.getHeight();
+      const imgWidth = 180;
+      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+      const x = (pdfWidth - imgWidth) / 2;
+      const y = (pdfHeight - imgHeight) / 2;
+
+      pdf.addImage(imgData, "PNG", x, y, imgWidth, imgHeight);
+      pdf.save(`${scheduleData.staff.staff_name}_Schedule.pdf`);
+    } catch (error) {
+      console.error("Error generating Schedule PDF:", error);
+    } finally {
+      setIsDownloadingSchedule(false);
+    }
+  };
+
+  
 
   return (
     <Box sx={{ flexGrow: 1, p: 3, backgroundColor: "#f5f5f5", minHeight: "100vh" }}>
@@ -164,6 +218,24 @@ const ViewProfile = () => {
               {isDownloading ? "Downloading..." : "Download ID"}
             </Button>
           </Grid> 
+          
+          <Grid item>
+            <Button
+              variant="contained"
+              color="secondary"
+              startIcon={isDownloadingSchedule ? <CircularProgress size={20} color="inherit" /> : <ScheduleIcon />}
+              onClick={downloadSchedulePDF}
+              disabled={isDownloadingSchedule}
+              sx={{
+                px: 4,
+                py: 1,
+                backgroundColor: "#9c27b0",
+                "&:hover": { backgroundColor: "#7b1fa2" },
+              }}
+            >
+              {isDownloadingSchedule ? "Downloading..." : "Download Schedule"}
+            </Button>
+          </Grid>
 
           <Grid item>
             <Button
@@ -262,6 +334,120 @@ const ViewProfile = () => {
       <Typography variant="body2" sx={{ color: "#000" }}>
         This card is the property of Krishna Academy.
       </Typography> {/* Changed text color */}
+    </Box>
+  </Box>
+</Box>
+
+<Box 
+  ref={scheduleCardRef} 
+  sx={{ 
+    position: "absolute",
+    left: "-9999px",
+    top: 0,
+    width: "600px",
+    height: "auto", // auto-adjust height for dynamic content
+    fontFamily: "'Roboto', 'Helvetica', 'Arial', sans-serif",
+  }}
+>
+  <Box
+    sx={{
+      width: "100%",
+      background: "linear-gradient(135deg, #673ab7, #ffffff)",
+      color: "#000",
+      borderRadius: 4,
+      overflow: "hidden",
+      boxShadow: "0 4px 10px rgba(0, 0, 0, 0.1)",
+      display: "flex",
+      flexDirection: "column",
+    }}
+  >
+    {/* Header */}
+    <Box sx={{ 
+      p: 2, 
+      background: "#9c27b0", 
+      display: "flex", 
+      justifyContent: "space-between", 
+      alignItems: "center",
+      color: "#fff"
+    }}>
+      <Typography variant="h5" sx={{ fontWeight: "bold" }}>Staff Schedule</Typography>
+      <Typography variant="body2">{scheduleData?.staff.staff_name}</Typography>
+    </Box>
+
+    {/* Staff Info */}
+    <Box sx={{ p: 3, flexGrow: 1 }}>
+      <Grid container spacing={2}>
+        <Grid item xs={6}>
+          <Typography variant="body2">Staff ID:</Typography>
+          <Typography variant="body1" sx={{ fontWeight: "bold" }}>{scheduleData?.staff.staff_unique_ids}</Typography>
+        </Grid>
+        <Grid item xs={6}>
+          <Typography variant="body2">Number of Leaves:</Typography>
+          <Typography variant="body1" sx={{ fontWeight: "bold" }}>{scheduleData?.number_of_leaves}</Typography>
+        </Grid>
+        <Grid item xs={6}>
+          <Typography variant="body2">Leave Type:</Typography>
+          <Typography variant="body1" sx={{ fontWeight: "bold" }}>{scheduleData?.leave_type}</Typography>
+        </Grid>
+        <Grid item xs={6}>
+          <Typography variant="body2">Salary:</Typography>
+          <Typography variant="body1" sx={{ fontWeight: "bold" }}>₹{scheduleData?.salary}</Typography>
+        </Grid>
+        <Grid item xs={6}>
+          <Typography variant="body2">Net Payable Amount:</Typography>
+          <Typography variant="body1" sx={{ fontWeight: "bold" }}>₹{scheduleData?.net_payble_amount}</Typography>
+        </Grid>
+        <Grid item xs={6}>
+          <Typography variant="body2">Login Time:</Typography>
+          <Typography variant="body1" sx={{ fontWeight: "bold" }}>{scheduleData?.login_time || "N/A"}</Typography>
+        </Grid>
+        
+        {/* Additional Data */}
+        <Grid item xs={6}>
+          <Typography variant="body2">Fine Type (Early Leaving):</Typography>
+          <Typography variant="body1" sx={{ fontWeight: "bold" }}>{scheduleData?.fine_type_early_leaving}</Typography>
+        </Grid>
+        <Grid item xs={6}>
+          <Typography variant="body2">Fine Amount (Early Leaving):</Typography>
+          <Typography variant="body1" sx={{ fontWeight: "bold" }}>₹{scheduleData?.fine_amount_early_leaving}</Typography>
+        </Grid>
+        <Grid item xs={6}>
+          <Typography variant="body2">Fine Type (Late Login):</Typography>
+          <Typography variant="body1" sx={{ fontWeight: "bold" }}>{scheduleData?.fine_type_late_login}</Typography>
+        </Grid>
+        <Grid item xs={6}>
+          <Typography variant="body2">Fine Amount (Late Login):</Typography>
+          <Typography variant="body1" sx={{ fontWeight: "bold" }}>₹{scheduleData?.fine_amount_late_login}</Typography>
+        </Grid>
+        <Grid item xs={6}>
+          <Typography variant="body2">Extra Hours Pay:</Typography>
+          <Typography variant="body1" sx={{ fontWeight: "bold" }}>₹{scheduleData?.extra_hours_pay}</Typography>
+        </Grid>
+        <Grid item xs={6}>
+          <Typography variant="body2">Grace Pay:</Typography>
+          <Typography variant="body1" sx={{ fontWeight: "bold" }}>₹{scheduleData?.grace_pay}</Typography>
+        </Grid>
+        <Grid item xs={6}>
+          <Typography variant="body2">Week Off Pay:</Typography>
+          <Typography variant="body1" sx={{ fontWeight: "bold" }}>₹{scheduleData?.week_off_pay}</Typography>
+        </Grid>
+        <Grid item xs={6}>
+          <Typography variant="body2">Public Holiday Pay:</Typography>
+          <Typography variant="body1" sx={{ fontWeight: "bold" }}>₹{scheduleData?.public_holiday_pay}</Typography>
+        </Grid>
+      </Grid>
+    </Box>
+
+    {/* Footer */}
+    <Box sx={{ 
+      mt: "auto", 
+      p: 1, 
+      background: "rgba(0, 0, 0, 0.1)", 
+      textAlign: "center"
+    }}>
+      <Typography variant="body2" sx={{ color: "#000" }}>
+        This schedule is subject to change. Please confirm with the administration.
+      </Typography>
     </Box>
   </Box>
 </Box>
