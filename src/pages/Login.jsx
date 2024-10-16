@@ -90,6 +90,7 @@ const Login = () => {
         localStorage.setItem('authToken', result.data.token);
         localStorage.setItem('id', result.data.id);
         localStorage.setItem('break_time', result.data.break_count);
+        localStorage.setItem('user', result.data.name);
         setSnackbarMessage('Login successful');
         setSnackbarSeverity('success');
         setSnackbarOpen(true);
