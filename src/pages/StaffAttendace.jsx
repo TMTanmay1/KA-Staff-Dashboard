@@ -367,9 +367,10 @@ function StaffAttendance() {
         <Tooltip title={disablePunchIn ? 'Already punched in' : ''}>
           <Card
             sx={{
-              backgroundColor: '#4caf50',
+              backgroundColor: disablePunchIn ? '#a5d6a7' : '#4caf50',
               transition: 'transform 0.3s',
               cursor: disablePunchIn ? 'not-allowed' : 'pointer',
+              opacity: disablePunchIn ? 0.5 : 1,
               '&:hover': disablePunchIn ? {} : { transform: 'scale(1.05)' },
             }}
             onClick={disablePunchIn ? null : () => handlePunch('punchin')}
@@ -391,10 +392,11 @@ function StaffAttendance() {
         <Tooltip title={enablePunchOut && disablePunchOut ? 'Already punched out' : ''}>
           <Card
             sx={{
-              backgroundColor: '#f44336',
+              backgroundColor: enablePunchOut && !disablePunchOut ? '#f44336' : '#e57373',
               transition: 'transform 0.3s',
             
               cursor: enablePunchOut && !disablePunchOut ? 'pointer' : 'not-allowed',
+              opacity: enablePunchOut && !disablePunchOut ? 1 : 0.5,
               
               '&:hover': enablePunchOut && !disablePunchOut ? { transform: 'scale(1.05)' } : {},
               
@@ -422,6 +424,7 @@ function StaffAttendance() {
               backgroundColor: '#ff9800',
               transition: 'transform 0.3s',
               cursor: isBreakDisabled  ? 'not-allowed' : 'pointer',
+              opacity: isBreakDisabled ? 0.5 : 1,
               '&:hover': !isBreakDisabled && {
                 transform: 'scale(1.05)',
               },
