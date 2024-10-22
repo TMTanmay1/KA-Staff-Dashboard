@@ -184,7 +184,7 @@ const Login = () => {
         }}
       >
         
-        <img src={logo} alt="Logo" style={{ width: '150px', marginBottom: '20px' }} />
+        {/* <img src={logo} alt="Logo" style={{ width: '150px', marginBottom: '20px' }} /> */}
         <Box
           sx={{
             width: '100%',
